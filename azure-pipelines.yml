@@ -15,9 +15,7 @@ variables:
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
-pool:
-  vmImage: 'ubuntu-16.04' # examples of other options: 'macOS-10.13', 'vs2017-win2016'
-steps:
+
     - task: UseDotNet@2
       inputs:
         version: '3.0.x'
@@ -26,14 +24,14 @@ steps:
       inputs:
         version: '2.2.x'
         packageType: runtime
-steps:
+
 - task: UseDotNet@2
   displayName: 'Install .NET Core SDK'
   inputs:
     version: 3.0.x
     performMultiLevelLookup: true
 # do this before your build tasks
-steps:
+
 - task: DotNetCoreCLI@2
   inputs:
     command: restore
@@ -42,7 +40,7 @@ steps:
     nugetConfigPath: NuGet.config    # Relative to root of the repository
     externalFeedCredentials: <Name of the NuGet service connection>
 # ...
-steps:
+
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
@@ -50,7 +48,7 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
-steps:
+
 # ...
 # do this after other tasks such as building
 - task: DotNetCoreCLI@2
@@ -59,7 +57,6 @@ steps:
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-steps:
 # ...
 # do this after your tests have run
 - script: dotnet test <test-project> --logger trx
@@ -69,7 +66,7 @@ steps:
     testRunner: VSTest
     testResultsFiles: '**/*.trx'
 
-steps:
+
 # ...
 # do this after other tasks such as building
 - task: DotNetCoreCLI@2
@@ -78,7 +75,7 @@ steps:
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
-steps:
+
 # ...
 # do this after your tests have run
 - script: dotnet test <test-project> --logger trx --collect "Code coverage"
@@ -108,7 +105,7 @@ steps:
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml  
-steps:
+
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -123,7 +120,7 @@ steps:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'myWebsiteName'
 
-steps:
+
 # ...
 # do this near the end of your pipeline in most cases
 - script: dotnet pack /p:PackageVersion=$(version)  # define version variable elsewhere in your pipeline
@@ -138,7 +135,7 @@ steps:
     versioningScheme: byEnvVar
     versionEnvVar: version
 
-steps:
+
 # ...
 # do this after you've built your app, near the end of your pipeline in most cases
 # for example, you do this before you deploy to an Azure web app on Windows
